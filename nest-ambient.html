@@ -16,25 +16,75 @@
     user-select: none;
     transition: background-image 2s ease;
   }
-  #rain-overlay {
+
+  /* Rain */
+  #rain {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 2s ease;
     z-index: 1;
-    background-image: radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.08) 0%, transparent 40%),
-                      repeating-linear-gradient(transparent, transparent 8px, rgba(255,255,255,0.04) 8px, rgba(255,255,255,0.04) 9px);
-    animation: rain 1.2s linear infinite;
+    opacity: 0;
+    transition: opacity 1.5s;
+    background-image: 
+      radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.12) 0%, transparent 40%),
+      repeating-linear-gradient(transparent, transparent 6px, rgba(255,255,255,0.06) 6px, rgba(255,255,255,0.06) 7px);
+    animation: rain 0.8s linear infinite;
   }
-  #rain-overlay.active { opacity: 0.35; }
+  #rain.active { opacity: 0.7; }
   @keyframes rain {
     from { background-position: 0 0; }
-    to   { background-position: 0 40px; }
+    to   { background-position: 0 50px; }
   }
+
+  /* Lightning */
+  #lightning {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background: rgba(255,255,255,0);
+    opacity: 0;
+  }
+  #lightning.flash {
+    animation: lightning 0.6s ease-out;
+  }
+  @keyframes lightning {
+    0% { opacity: 0; background: rgba(255,255,255,0); }
+    10% { opacity: 0.8; background: rgba(255,255,255,0.6); }
+    20% { opacity: 0.2; }
+    40% { opacity: 0.9; background: rgba(255,255,255,0.7); }
+    100% { opacity: 0; }
+  }
+
+  /* Drifting clouds */
+  .clouds {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 2s;
+    overflow: hidden;
+  }
+  .clouds.active { opacity: 0.35; }
+  .cloud {
+    position: absolute;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    filter: blur(40px);
+    animation: drift linear infinite;
+  }
+  .cloud:nth-child(1) { width: 300px; height: 80px; top: 15%; left: -300px; animation-duration: 45s; }
+  .cloud:nth-child(2) { width: 400px; height: 100px; top: 25%; left: -400px; animation-duration: 60s; animation-delay: -20s; }
+  .cloud:nth-child(3) { width: 250px; height: 70px; top: 40%; left: -250px; animation-duration: 50s; animation-delay: -10s; }
+  @keyframes drift {
+    from { transform: translateX(0); }
+    to   { transform: translateX(140vw); }
+  }
+
   .container {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     width: 100vw;
     height: 100vh;
     padding: 52px 52px 36px;
@@ -42,11 +92,7 @@
     flex-direction: column;
     justify-content: space-between;
   }
-  .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; }
   .clock-section { flex: 1; }
   .time {
     font-size: 148px;
@@ -62,39 +108,12 @@
     opacity: 0.95;
     text-shadow: 0 2px 14px rgba(0,0,0,0.6);
   }
-  .weather-section {
-    text-align: right;
-    min-width: 260px;
-  }
-  .weather-main {
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-    gap: 10px;
-  }
-  .weather-icon {
-    font-size: 58px;
-    margin-bottom: 4px;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
-  }
-  .temp {
-    font-size: 76px;
-    font-weight: 300;
-    line-height: 0.85;
-    text-shadow: 0 4px 24px rgba(0,0,0,0.7);
-  }
-  .weather-details {
-    margin-top: 4px;
-    font-size: 22px;
-    opacity: 0.95;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-  }
-  .weather-extra {
-    margin-top: 2px;
-    font-size: 17px;
-    opacity: 0.85;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-  }
+  .weather-section { text-align: right; min-width: 260px; }
+  .weather-main { display: flex; align-items: flex-end; justify-content: flex-end; gap: 10px; }
+  .weather-icon { font-size: 58px; margin-bottom: 4px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2)); }
+  .temp { font-size: 76px; font-weight: 300; line-height: 0.85; text-shadow: 0 4px 24px rgba(0,0,0,0.7); }
+  .weather-details { margin-top: 4px; font-size: 22px; opacity: 0.95; text-shadow: 0 2px 12px rgba(0,0,0,0.6); }
+  .weather-extra { margin-top: 2px; font-size: 17px; opacity: 0.85; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
   .forecast-strip {
     display: flex;
     justify-content: space-between;
@@ -103,33 +122,20 @@
     margin-top: 20px;
     gap: 16px;
   }
-  .hour {
-    flex: 1;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-  .hour-time {
-    font-size: 22px;
-    font-weight: 500;
-    opacity: 0.95;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.75);
-  }
-  .hour-icon {
-    font-size: 48px;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.55));
-  }
-  .hour-temp {
-    font-size: 28px;
-    font-weight: 500;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.75);
-  }
+  .hour { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .hour-time { font-size: 22px; font-weight: 500; opacity: 0.95; text-shadow: 0 2px 12px rgba(0,0,0,0.75); }
+  .hour-icon { font-size: 48px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.55)); }
+  .hour-temp { font-size: 28px; font-weight: 500; text-shadow: 0 2px 12px rgba(0,0,0,0.75); }
 </style>
 </head>
 <body>
-<div id="rain-overlay"></div>
+<div id="rain"></div>
+<div id="lightning"></div>
+<div class="clouds" id="clouds">
+  <div class="cloud"></div>
+  <div class="cloud"></div>
+  <div class="cloud"></div>
+</div>
 <div class="container">
   <div class="top">
     <div class="clock-section">
@@ -215,38 +221,54 @@ async function updateWeather() {
       `;
       strip.appendChild(hourDiv);
     }
-    applyBackground(code, sunset, sunrise);
+    applyWeatherEffects(code, sunset, sunrise);
   } catch (err) {
     console.error(err);
     document.getElementById('weather-details').textContent = "Weather unavailable";
   }
 }
-function applyBackground(code, sunset, sunrise) {
+function applyWeatherEffects(code, sunset, sunrise) {
   const now = new Date();
   const isNight = now < sunrise || now > sunset;
-  const rainEl = document.getElementById('rain-overlay');
+  const rainEl = document.getElementById('rain');
+  const cloudsEl = document.getElementById('clouds');
+  const lightningEl = document.getElementById('lightning');
   let bg = 'bg-scenic.jpg';
-  let rainIntensity = 0;
+  let rain = false;
+  let clouds = false;
+  let thunder = false;
 
-  if ([95, 96, 99, 82, 65, 81, 61, 63, 80, 51, 53, 55].includes(code)) {
+  if ([95, 96, 99, 82].includes(code)) {
     bg = 'bg-rain.jpg';
-    rainIntensity = [95,96,99,82].includes(code) ? 0.6 : 0.3;
+    rain = true;
+    thunder = true;
+    clouds = true;
+  } else if ([65, 81, 61, 63, 80, 51, 53, 55].includes(code)) {
+    bg = 'bg-rain.jpg';
+    rain = true;
+    clouds = true;
   } else if ([71, 73, 75, 45, 48].includes(code) || code === 3) {
     bg = 'bg-overcast.jpg';
+    clouds = true;
   } else if (isNight) {
     bg = 'bg-night.jpg';
-  } else {
-    bg = 'bg-scenic.jpg';
+  } else if (code === 2) {
+    clouds = true;
   }
 
   document.body.style.backgroundImage = `url('${bg}')`;
+  rainEl.classList.toggle('active', rain);
+  cloudsEl.classList.toggle('active', clouds);
 
-  if (rainIntensity > 0) {
-    rainEl.classList.add('active');
-    rainEl.style.opacity = rainIntensity;
-  } else {
-    rainEl.classList.remove('active');
-    rainEl.style.opacity = 0;
+  // Lightning flashes for thunderstorms
+  if (thunder) {
+    setInterval(() => {
+      if (Math.random() > 0.6) {
+        lightningEl.classList.remove('flash');
+        void lightningEl.offsetWidth;
+        lightningEl.classList.add('flash');
+      }
+    }, 4000);
   }
 }
 updateTime();
