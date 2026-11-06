@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nest Ambient</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: url('bg-scenic.jpg') center / cover no-repeat;
+    color: white;
+    user-select: none;
+    transition: background-image 2s ease;
+  }
+  #rain-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 2s ease;
+    z-index: 1;
+    background-image: radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.08) 0%, transparent 40%),
+                      repeating-linear-gradient(transparent, transparent 8px, rgba(255,255,255,0.04) 8px, rgba(255,255,255,0.04) 9px);
+    animation: rain 1.2s linear infinite;
+  }
+  #rain-overlay.active { opacity: 0.35; }
+  @keyframes rain {
+    from { background-position: 0 0; }
+    to   { background-position: 0 40px; }
+  }
+  .container {
+    position: relative;
+    z-index: 2;
+    width: 100vw;
+    height: 100vh;
+    padding: 52px 52px 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .clock-section { flex: 1; }
+  .time {
+    font-size: 148px;
+    font-weight: 300;
+    letter-spacing: -5px;
+    line-height: 0.85;
+    text-shadow: 0 4px 28px rgba(0,0,0,0.7), 0 2px 10px rgba(0,0,0,0.5);
+  }
+  .date {
+    font-size: 26px;
+    margin-top: 10px;
+    font-weight: 400;
+    opacity: 0.95;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.6);
+  }
+  .weather-section {
+    text-align: right;
+    min-width: 260px;
+  }
+  .weather-main {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .weather-icon {
+    font-size: 58px;
+    margin-bottom: 4px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+  }
+  .temp {
+    font-size: 76px;
+    font-weight: 300;
+    line-height: 0.85;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.7);
+  }
+  .weather-details {
+    margin-top: 4px;
+    font-size: 22px;
+    opacity: 0.95;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  }
+  .weather-extra {
+    margin-top: 2px;
+    font-size: 17px;
+    opacity: 0.85;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  }
+  .forecast-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 20px 16px 12px;
+    margin-top: 20px;
+    gap: 16px;
+  }
+  .hour {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .hour-time {
+    font-size: 22px;
+    font-weight: 500;
+    opacity: 0.95;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.75);
+  }
+  .hour-icon {
+    font-size: 48px;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.55));
+  }
+  .hour-temp {
+    font-size: 28px;
+    font-weight: 500;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.75);
+  }
+</style>
+</head>
+<body>
+<div id="rain-overlay"></div>
+<div class="container">
+  <div class="top">
+    <div class="clock-section">
+      <div class="time" id="time">12:17</div>
+      <div class="date" id="date">Friday • November 6</div>
+    </div>
+    <div class="weather-section">
+      <div class="weather-main">
+        <div class="weather-icon" id="weather-icon">☀️</div>
+        <div class="temp" id="temp">8°</div>
+      </div>
+      <div class="weather-details" id="weather-details">Clear</div>
+      <div class="weather-extra" id="weather-extra">H: 11°  L: 3°</div>
+    </div>
+  </div>
+  <div class="forecast-strip" id="forecast-strip"></div>
+</div>
+<script>
+const LAT = 52.453849;
+const LON = -0.818624;
+const USE_FAHRENHEIT = false;
+const weatherIcons = {
+  0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
+  45: "🌫️", 48: "🌫️",
+  51: "🌦️", 53: "🌦️", 55: "🌧️",
+  61: "🌧️", 63: "🌧️", 65: "🌧️",
+  71: "❄️", 73: "❄️", 75: "❄️",
+  80: "🌦️", 81: "🌧️", 82: "⛈️",
+  95: "⛈️", 96: "⛈️", 99: "⛈️"
+};
+const weatherText = {
+  0: "Clear", 1: "Mostly Clear", 2: "Partly Cloudy", 3: "Overcast",
+  45: "Foggy", 48: "Foggy",
+  51: "Light Drizzle", 53: "Drizzle", 55: "Heavy Drizzle",
+  61: "Light Rain", 63: "Rain", 65: "Heavy Rain",
+  71: "Light Snow", 73: "Snow", 75: "Heavy Snow",
+  80: "Showers", 81: "Rain Showers", 82: "Heavy Showers",
+  95: "Thunderstorm", 96: "Thunderstorm", 99: "Thunderstorm"
+};
+function updateTime() {
+  const now = new Date();
+  let hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  hours = hours % 12 || 12;
+  document.getElementById('time').textContent = `${hours}:${minutes}`;
+  const options = { weekday: 'long', month: 'long', day: 'numeric' };
+  document.getElementById('date').textContent = now.toLocaleDateString('en-US', options).replace(',', ' •');
+}
+async function updateWeather() {
+  try {
+    const unit = USE_FAHRENHEIT ? "fahrenheit" : "celsius";
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,sunset,sunrise&temperature_unit=${unit}&timezone=auto&forecast_days=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const temp = Math.round(data.current.temperature_2m);
+    const code = data.current.weather_code;
+    const high = Math.round(data.daily.temperature_2m_max[0]);
+    const low = Math.round(data.daily.temperature_2m_min[0]);
+    const sunset = new Date(data.daily.sunset[0]);
+    const sunrise = new Date(data.daily.sunrise[0]);
+    document.getElementById('temp').textContent = `${temp}°`;
+    document.getElementById('weather-icon').textContent = weatherIcons[code] || "🌡️";
+    document.getElementById('weather-details').textContent = weatherText[code] || "Unknown";
+    document.getElementById('weather-extra').innerHTML = `H: ${high}° &nbsp; L: ${low}°`;
+    const now = new Date();
+    const currentHour = now.getHours();
+    const strip = document.getElementById('forecast-strip');
+    strip.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+      const idx = currentHour + i;
+      if (idx >= data.hourly.time.length) break;
+      const hTime = new Date(data.hourly.time[idx]);
+      const label = i === 0 ? 'Now' : hTime.toLocaleTimeString('en-US', { hour: 'numeric' });
+      const hTemp = Math.round(data.hourly.temperature_2m[idx]);
+      const hCode = data.hourly.weather_code[idx];
+      const hIcon = weatherIcons[hCode] || '🌡️';
+      const hourDiv = document.createElement('div');
+      hourDiv.className = 'hour';
+      hourDiv.innerHTML = `
+        <div class="hour-time">${label}</div>
+        <div class="hour-icon">${hIcon}</div>
+        <div class="hour-temp">${hTemp}°</div>
+      `;
+      strip.appendChild(hourDiv);
+    }
+    applyBackground(code, sunset, sunrise);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('weather-details').textContent = "Weather unavailable";
+  }
+}
+function applyBackground(code, sunset, sunrise) {
+  const now = new Date();
+  const isNight = now < sunrise || now > sunset;
+  const rainEl = document.getElementById('rain-overlay');
+  let bg = 'bg-scenic.jpg';
+  let rainIntensity = 0;
+
+  if ([95, 96, 99, 82, 65, 81, 61, 63, 80, 51, 53, 55].includes(code)) {
+    bg = 'bg-rain.jpg';
+    rainIntensity = [95,96,99,82].includes(code) ? 0.6 : 0.3;
+  } else if ([71, 73, 75, 45, 48].includes(code) || code === 3) {
+    bg = 'bg-overcast.jpg';
+  } else if (isNight) {
+    bg = 'bg-night.jpg';
+  } else {
+    bg = 'bg-scenic.jpg';
+  }
+
+  document.body.style.backgroundImage = `url('${bg}')`;
+
+  if (rainIntensity > 0) {
+    rainEl.classList.add('active');
+    rainEl.style.opacity = rainIntensity;
+  } else {
+    rainEl.classList.remove('active');
+    rainEl.style.opacity = 0;
+  }
+}
+updateTime();
+updateWeather();
+setInterval(updateTime, 1000);
+setInterval(updateWeather, 10 * 60 * 1000);
+</script>
+</body>
+</html>
