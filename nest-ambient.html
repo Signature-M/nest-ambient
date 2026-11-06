@@ -11,134 +11,81 @@
     height: 100%;
     overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: url('bg-scenic.jpg') center / cover no-repeat;
+    background: #0a1628 center / cover no-repeat;
     color: white;
     user-select: none;
+  }
+  #bg {
+    position: fixed;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
     transition: background-image 2s ease;
+    z-index: 0;
   }
-
-  /* Rain */
-  #rain {
+  canvas {
     position: fixed;
     inset: 0;
-    pointer-events: none;
     z-index: 1;
-    opacity: 0;
-    transition: opacity 1.5s;
-    background-image: 
-      radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.12) 0%, transparent 40%),
-      repeating-linear-gradient(transparent, transparent 6px, rgba(255,255,255,0.06) 6px, rgba(255,255,255,0.06) 7px);
-    animation: rain 0.8s linear infinite;
-  }
-  #rain.active { opacity: 0.7; }
-  @keyframes rain {
-    from { background-position: 0 0; }
-    to   { background-position: 0 50px; }
-  }
-
-  /* Lightning */
-  #lightning {
-    position: fixed;
-    inset: 0;
     pointer-events: none;
-    z-index: 2;
-    background: rgba(255,255,255,0);
-    opacity: 0;
   }
-  #lightning.flash {
-    animation: lightning 0.6s ease-out;
-  }
-  @keyframes lightning {
-    0% { opacity: 0; background: rgba(255,255,255,0); }
-    10% { opacity: 0.8; background: rgba(255,255,255,0.6); }
-    20% { opacity: 0.2; }
-    40% { opacity: 0.9; background: rgba(255,255,255,0.7); }
-    100% { opacity: 0; }
-  }
-
-  /* Drifting clouds */
-  .clouds {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 2s;
-    overflow: hidden;
-  }
-  .clouds.active { opacity: 0.35; }
-  .cloud {
-    position: absolute;
-    background: rgba(255,255,255,0.15);
-    border-radius: 50%;
-    filter: blur(40px);
-    animation: drift linear infinite;
-  }
-  .cloud:nth-child(1) { width: 300px; height: 80px; top: 15%; left: -300px; animation-duration: 45s; }
-  .cloud:nth-child(2) { width: 400px; height: 100px; top: 25%; left: -400px; animation-duration: 60s; animation-delay: -20s; }
-  .cloud:nth-child(3) { width: 250px; height: 70px; top: 40%; left: -250px; animation-duration: 50s; animation-delay: -10s; }
-  @keyframes drift {
-    from { transform: translateX(0); }
-    to   { transform: translateX(140vw); }
-  }
-
   .container {
     position: relative;
-    z-index: 3;
+    z-index: 2;
     width: 100vw;
     height: 100vh;
-    padding: 52px 52px 36px;
+    padding: 48px 56px 32px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
   .top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .clock-section { flex: 1; }
   .time {
-    font-size: 148px;
+    font-size: 140px;
     font-weight: 300;
-    letter-spacing: -5px;
+    letter-spacing: -4px;
     line-height: 0.85;
-    text-shadow: 0 4px 28px rgba(0,0,0,0.7), 0 2px 10px rgba(0,0,0,0.5);
+    text-shadow: 0 4px 24px rgba(0,0,0,0.6);
   }
   .date {
-    font-size: 26px;
-    margin-top: 10px;
+    font-size: 24px;
+    margin-top: 8px;
     font-weight: 400;
-    opacity: 0.95;
-    text-shadow: 0 2px 14px rgba(0,0,0,0.6);
+    opacity: 0.9;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
   }
-  .weather-section { text-align: right; min-width: 260px; }
-  .weather-main { display: flex; align-items: flex-end; justify-content: flex-end; gap: 10px; }
-  .weather-icon { font-size: 58px; margin-bottom: 4px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2)); }
-  .temp { font-size: 76px; font-weight: 300; line-height: 0.85; text-shadow: 0 4px 24px rgba(0,0,0,0.7); }
-  .weather-details { margin-top: 4px; font-size: 22px; opacity: 0.95; text-shadow: 0 2px 12px rgba(0,0,0,0.6); }
-  .weather-extra { margin-top: 2px; font-size: 17px; opacity: 0.85; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
+  .weather-section { text-align: right; }
+  .weather-main { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .weather-icon { font-size: 52px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); }
+  .temp { font-size: 72px; font-weight: 300; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+  .weather-details { margin-top: 2px; font-size: 20px; opacity: 0.95; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+  .weather-extra { margin-top: 2px; font-size: 16px; opacity: 0.8; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
   .forecast-strip {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 20px 16px 12px;
-    margin-top: 20px;
-    gap: 16px;
+    padding: 16px 8px 8px;
+    gap: 12px;
   }
-  .hour { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .hour-time { font-size: 22px; font-weight: 500; opacity: 0.95; text-shadow: 0 2px 12px rgba(0,0,0,0.75); }
-  .hour-icon { font-size: 48px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.55)); }
-  .hour-temp { font-size: 28px; font-weight: 500; text-shadow: 0 2px 12px rgba(0,0,0,0.75); }
+  .hour {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .hour-time { font-size: 18px; font-weight: 500; opacity: 0.9; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+  .hour-icon { font-size: 36px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
+  .hour-temp { font-size: 22px; font-weight: 500; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
 </style>
 </head>
 <body>
-<div id="rain"></div>
-<div id="lightning"></div>
-<div class="clouds" id="clouds">
-  <div class="cloud"></div>
-  <div class="cloud"></div>
-  <div class="cloud"></div>
-</div>
+<div id="bg"></div>
+<canvas id="fx"></canvas>
 <div class="container">
   <div class="top">
-    <div class="clock-section">
+    <div>
       <div class="time" id="time">12:17</div>
       <div class="date" id="date">Friday • November 6</div>
     </div>
@@ -156,7 +103,150 @@
 <script>
 const LAT = 52.453849;
 const LON = -0.818624;
-const USE_FAHRENHEIT = false;
+const canvas = document.getElementById('fx');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let weatherType = 'clear';
+let lightningTimer = 0;
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function createParticles(type, count) {
+  particles = [];
+  for (let i = 0; i < count; i++) {
+    if (type === 'rain') {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        len: 18 + Math.random() * 22,
+        speed: 12 + Math.random() * 14,
+        opacity: 0.15 + Math.random() * 0.25,
+        width: 0.6 + Math.random() * 0.8,
+        slant: 1.2 + Math.random() * 0.8
+      });
+    } else if (type === 'snow') {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: 1.2 + Math.random() * 2.2,
+        speed: 0.6 + Math.random() * 1.2,
+        drift: (Math.random() - 0.5) * 0.8,
+        opacity: 0.4 + Math.random() * 0.35
+      });
+    } else if (type === 'fog') {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.55,
+        w: 280 + Math.random() * 340,
+        h: 50 + Math.random() * 70,
+        speed: 0.25 + Math.random() * 0.4,
+        opacity: 0.06 + Math.random() * 0.08
+      });
+    } else if (type === 'clouds') {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.4,
+        w: 220 + Math.random() * 280,
+        h: 40 + Math.random() * 50,
+        speed: 0.15 + Math.random() * 0.3,
+        opacity: 0.04 + Math.random() * 0.06
+      });
+    } else if (type === 'sun') {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.5,
+        r: 1 + Math.random() * 2,
+        speed: 0.3 + Math.random() * 0.5,
+        opacity: 0.1 + Math.random() * 0.15,
+        drift: (Math.random() - 0.5) * 0.4
+      });
+    }
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (weatherType === 'rain' || weatherType === 'thunder') {
+    particles.forEach(p => {
+      ctx.globalAlpha = p.opacity;
+      ctx.strokeStyle = 'rgba(210, 225, 240, 0.7)';
+      ctx.lineWidth = p.width;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + p.slant, p.y + p.len);
+      ctx.stroke();
+      p.y += p.speed;
+      p.x += p.slant * 0.35;
+      if (p.y > canvas.height) {
+        p.y = -p.len;
+        p.x = Math.random() * canvas.width;
+      }
+    });
+  } else if (weatherType === 'snow') {
+    particles.forEach(p => {
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      p.y += p.speed;
+      p.x += p.drift;
+      if (p.y > canvas.height) {
+        p.y = -10;
+        p.x = Math.random() * canvas.width;
+      }
+    });
+  } else if (weatherType === 'fog' || weatherType === 'overcast') {
+    particles.forEach(p => {
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = '#d0d8e0';
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.w, p.h, 0, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.speed;
+      if (p.x > canvas.width + p.w) p.x = -p.w;
+    });
+  } else if (weatherType === 'clouds') {
+    particles.forEach(p => {
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = '#e8eef4';
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, p.w, p.h, 0, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.speed;
+      if (p.x > canvas.width + p.w) p.x = -p.w;
+    });
+  } else if (weatherType === 'sun') {
+    particles.forEach(p => {
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = 'rgba(255, 240, 180, 0.8)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      p.y += p.speed * 0.3;
+      p.x += p.drift;
+      if (p.y > canvas.height * 0.6) {
+        p.y = Math.random() * canvas.height * 0.3;
+        p.x = Math.random() * canvas.width;
+      }
+    });
+  }
+  if (weatherType === 'thunder' && Math.random() < 0.006) {
+    ctx.globalAlpha = 0.45;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(draw);
+}
+draw();
+
 const weatherIcons = {
   0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
   45: "🌫️", 48: "🌫️",
@@ -175,6 +265,7 @@ const weatherText = {
   80: "Showers", 81: "Rain Showers", 82: "Heavy Showers",
   95: "Thunderstorm", 96: "Thunderstorm", 99: "Thunderstorm"
 };
+
 function updateTime() {
   const now = new Date();
   let hours = now.getHours();
@@ -184,10 +275,10 @@ function updateTime() {
   const options = { weekday: 'long', month: 'long', day: 'numeric' };
   document.getElementById('date').textContent = now.toLocaleDateString('en-US', options).replace(',', ' •');
 }
+
 async function updateWeather() {
   try {
-    const unit = USE_FAHRENHEIT ? "fahrenheit" : "celsius";
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,sunset,sunrise&temperature_unit=${unit}&timezone=auto&forecast_days=1`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,sunset,sunrise&temperature_unit=celsius&timezone=auto&forecast_days=1`;
     const res = await fetch(url);
     const data = await res.json();
     const temp = Math.round(data.current.temperature_2m);
@@ -211,66 +302,65 @@ async function updateWeather() {
       const label = i === 0 ? 'Now' : hTime.toLocaleTimeString('en-US', { hour: 'numeric' });
       const hTemp = Math.round(data.hourly.temperature_2m[idx]);
       const hCode = data.hourly.weather_code[idx];
-      const hIcon = weatherIcons[hCode] || '🌡️';
       const hourDiv = document.createElement('div');
       hourDiv.className = 'hour';
       hourDiv.innerHTML = `
         <div class="hour-time">${label}</div>
-        <div class="hour-icon">${hIcon}</div>
+        <div class="hour-icon">${weatherIcons[hCode] || '🌡️'}</div>
         <div class="hour-temp">${hTemp}°</div>
       `;
       strip.appendChild(hourDiv);
     }
-    applyWeatherEffects(code, sunset, sunrise);
+    applyWeather(code, sunset, sunrise);
   } catch (err) {
     console.error(err);
-    document.getElementById('weather-details').textContent = "Weather unavailable";
   }
 }
-function applyWeatherEffects(code, sunset, sunrise) {
+
+function applyWeather(code, sunset, sunrise) {
   const now = new Date();
   const isNight = now < sunrise || now > sunset;
-  const rainEl = document.getElementById('rain');
-  const cloudsEl = document.getElementById('clouds');
-  const lightningEl = document.getElementById('lightning');
-  let bg = 'bg-scenic.jpg';
-  let rain = false;
-  let clouds = false;
-  let thunder = false;
+  const bg = document.getElementById('bg');
+  let type = 'clear';
+  let bgImg = 'bg-clear.jpg';
 
   if ([95, 96, 99, 82].includes(code)) {
-    bg = 'bg-rain.jpg';
-    rain = true;
-    thunder = true;
-    clouds = true;
+    type = 'thunder';
+    bgImg = 'bg-rain.jpg';
+    createParticles('rain', 160);
   } else if ([65, 81, 61, 63, 80, 51, 53, 55].includes(code)) {
-    bg = 'bg-rain.jpg';
-    rain = true;
-    clouds = true;
-  } else if ([71, 73, 75, 45, 48].includes(code) || code === 3) {
-    bg = 'bg-overcast.jpg';
-    clouds = true;
-  } else if (isNight) {
-    bg = 'bg-night.jpg';
+    type = 'rain';
+    bgImg = 'bg-rain.jpg';
+    createParticles('rain', 120);
+  } else if ([71, 73, 75].includes(code)) {
+    type = 'snow';
+    bgImg = 'bg-overcast.jpg';
+    createParticles('snow', 100);
+  } else if ([45, 48].includes(code)) {
+    type = 'fog';
+    bgImg = 'bg-overcast.jpg';
+    createParticles('fog', 6);
+  } else if (code === 3) {
+    type = 'clouds';
+    bgImg = 'bg-overcast.jpg';
+    createParticles('clouds', 5);
   } else if (code === 2) {
-    clouds = true;
+    type = 'clouds';
+    bgImg = 'bg-clear.jpg';
+    createParticles('clouds', 4);
+  } else if (isNight) {
+    type = 'clear';
+    bgImg = 'bg-night.jpg';
+    particles = [];
+  } else {
+    type = 'sun';
+    bgImg = 'bg-clear.jpg';
+    createParticles('sun', 40);
   }
-
-  document.body.style.backgroundImage = `url('${bg}')`;
-  rainEl.classList.toggle('active', rain);
-  cloudsEl.classList.toggle('active', clouds);
-
-  // Lightning flashes for thunderstorms
-  if (thunder) {
-    setInterval(() => {
-      if (Math.random() > 0.6) {
-        lightningEl.classList.remove('flash');
-        void lightningEl.offsetWidth;
-        lightningEl.classList.add('flash');
-      }
-    }, 4000);
-  }
+  weatherType = type;
+  bg.style.backgroundImage = `url('${bgImg}')`;
 }
+
 updateTime();
 updateWeather();
 setInterval(updateTime, 1000);
